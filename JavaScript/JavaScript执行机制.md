@@ -1,0 +1,135 @@
+# 关于JavaScript
+
+- 单线程
+- "多线程"是单线程模拟出来
+
+# 事件循环
+
+- 同步任务
+
+- 异步任务
+
+<img src="E:\mygithub\blog\assets\事件循环.png" style="zoom: 50%;" />
+
+- 同步和异步任务分别进入不同的执行"场所"，同步的进入主线程，异步的进入Event Table并注册函数
+- 当指定的事情完成时，Event Table会将这个函数移入Event Queue
+- 主线程内的任务执行完毕为空，会去Event Queue读取对应的函数，进入主线程执行
+- 上述过程会不断重复，也就是常说的Event Loop(事件循环)。
+
+# setTimeout
+
+- `setTimeout`这个函数，是经过指定时间后，把要执行的任务加入到Event Queue中
+
+- `setTimeout(fn,0)`的含义是，指定某个任务在主线程最早可得的空闲时间执行，意思就是不用再等多少秒了，只要主线程执行栈内的同步任务全部执行完成，栈为空就马上执行
+- 即便主线程为空，0毫秒实际上也是达不到的，根据HTML的标准，最低是4毫秒
+
+# setInterval
+
+- 对于执行顺序来说，`setInterval`会每隔指定的时间将注册的函数置入Event Queue，如果前面的任务耗时太久，那么同样需要等待
+- 对于`setInterval(fn,ms)`来说，每过`ms`秒，会有`fn`进入Event Queue。
+- **回调函数`fn`执行时间超过了延迟时间`ms`，那么就完全看不出来有时间间隔了**
+
+# Promise与process.nextTick(callback)
+
+- `process.nextTick(callback)`类似node.js版的"setTimeout"，在事件循环的下一次循环中调用 callback 回调函数。
+
+除了广义的同步任务和异步任务，我们对任务有更精细的定义：
+
+- macro-task(宏任务)：包括整体代码script，setTimeout，setInterval
+- micro-task(微任务)：Promise，process.nextTick
+
+事件循环，宏任务，微任务的关系如图所示：
+
+<img src="E:\mygithub\blog\assets\宏任务微任务.png" style="zoom:50%;" />
+
+分析下面代码：
+
+```javascript
+console.log('1');
+
+setTimeout(function() {
+    console.log('2');
+    process.nextTick(function() {
+        console.log('3');
+    })
+    new Promise(function(resolve) {
+        console.log('4');
+        resolve();
+    }).then(function() {
+        console.log('5')
+    })
+})
+process.nextTick(function() {
+    console.log('6');
+})
+new Promise(function(resolve) {
+    console.log('7');
+    resolve();
+}).then(function() {
+    console.log('8')
+})
+
+setTimeout(function() {
+    console.log('9');
+    process.nextTick(function() {
+        console.log('10');
+    })
+    new Promise(function(resolve) {
+        console.log('11');
+        resolve();
+    }).then(function() {
+        console.log('12')
+    })
+})
+
+```
+
+第一轮事件循环流程分析如下：
+
+- 整体script作为第一个宏任务进入主线程，遇到`console.log`，输出1。
+- 遇到`setTimeout`，其回调函数被分发到宏任务Event Queue中。我们暂且记为`setTimeout1`。
+- 遇到`process.nextTick()`，其回调函数被分发到微任务Event Queue中。我们记为`process1`。
+- 遇到`Promise`，`new Promise`直接执行，输出7。`then`被分发到微任务Event Queue中。我们记为`then1`。
+- 又遇到了`setTimeout`，其回调函数被分发到宏任务Event Queue中，我们记为`setTimeout2`。
+
+| 宏任务Event Queue | 微任务Event Queue |
+| ----------------- | ----------------- |
+| setTimeout1       | process1          |
+| setTimeout2       | then1             |
+
+- 上表是第一轮事件循环宏任务结束时各Event Queue的情况，此时已经输出了1和7。
+- 我们发现了`process1`和`then1`两个微任务。
+- 执行`process1`,输出6。
+- 执行`then1`，输出8。
+
+好了，第一轮事件循环正式结束，这一轮的结果是输出1，7，6，8。那么第二轮时间循环从`setTimeout1`宏任务开始：
+
+- 首先输出2。接下来遇到了`process.nextTick()`，同样将其分发到微任务Event Queue中，记为`process2`。`new Promise`立即执行输出4，`then`也分发到微任务Event Queue中，记为`then2`。
+
+| 宏任务Event Queue | 微任务Event Queue |
+| ----------------- | ----------------- |
+| setTimeout2       | process2          |
+|                   | then2             |
+
+- 第二轮事件循环宏任务结束，我们发现有`process2`和`then2`两个微任务可以执行。
+- 输出3。
+- 输出5。
+- 第二轮事件循环结束，第二轮输出2，4，3，5。
+- 第三轮事件循环开始，此时只剩setTimeout2了，执行。
+- 直接输出9。
+- 将`process.nextTick()`分发到微任务Event Queue中。记为`process3`。
+- 直接执行`new Promise`，输出11。
+- 将`then`分发到微任务Event Queue中，记为`then3`。
+
+| 宏任务Event Queue | 微任务Event Queue |
+| ----------------- | ----------------- |
+|                   | process3          |
+|                   | then3             |
+
+- 第三轮事件循环宏任务执行结束，执行两个微任务`process3`和`then3`。
+- 输出10。
+- 输出12。
+- 第三轮事件循环结束，第三轮输出9，11，10，12。
+
+整段代码，共进行了三次事件循环，完整的输出为1，7，6，8，2，4，3，5，9，11，10，12。 (请注意，node环境下的事件监听依赖libuv与前端环境不完全相同，输出顺序可能会有误差)
+
