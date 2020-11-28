@@ -177,6 +177,29 @@
   - 如果设置了Transfer-Encoding，那么Content-Length将被忽视。
   - 使用长连接的话，会持续的推送动态内容。
 
+### **HTTPS和HTTP**区别
+
+- https = http + TLS/SSL
+  - **SSL** 安全套接层（Secure Sockets Layer）
+  - **TLS** （传输层安全，Transport Layer Security）
+- HTTP 是明文传输协议，HTTPS 协议是由 SSL+HTTP 协议构建的可进行加密传输、身份认证的网络协议，比 HTTP 协议安全
+- HTTPS比HTTP更加安全，对搜索引擎更友好，利于SEO,谷歌、百度优先索引HTTPS网页。
+- HTTPS标准端口443，HTTP标准端口80
+- HTTPS需要用到SSL证书，而HTTP不用
+
+**HTTPS:**
+
+1. 对数据进行加密，并建立一个信息安全通道，来保证传输过程中的数据安全;
+2. 对网站服务器进行真实身份认证。
+
+
+
+
+
+
+
+
+
 
 
 
