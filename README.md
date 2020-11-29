@@ -12,7 +12,7 @@
 ## JavaScript
 
 - [call-apply-bind](./JavaScript/call-apply-bind.md)
-- [动态图演示 Promises & AsyncAwait 的过程](./JavaScript/动态图演示 Promises & AsyncAwait 的过程.md)
+- [动态图演示Promises&AsyncAwait的过程](./JavaScript/动态图演示 Promises & AsyncAwait 的过程.md)
 
 # http
 
