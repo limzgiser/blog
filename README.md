@@ -8,18 +8,14 @@
 - [装饰者模式](./设计模式/装饰者模式.md)
 - [组合模式](./设计模式/组合模式.md)
 - [状态模式](./设计模式/状态模式.md)
-
+## 算法
+- [排序](./算法/排序.md)
 ## JavaScript
-
 - [call-apply-bind](./JavaScript/call-apply-bind.md)
 - [动态图演示Promises&AsyncAwait的过程](./JavaScript/动态图演示 Promises & AsyncAwait 的过程.md)
-
 # http
-
 - [巩固你的HTTP知识体系.md](./网络/巩固你的HTTP知识体系.md)
-
 # css
-
 - [BFC](./CSS/BFC.md)
 
   
