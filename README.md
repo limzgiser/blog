@@ -12,7 +12,7 @@
 - [排序](./算法/排序.md)
 ## JavaScript
 - [call-apply-bind](./JavaScript/call-apply-bind.md)
-- [动态图演示Promises&AsyncAwait的过程](./JavaScript/动态图演示 Promises & AsyncAwait 的过程.md)
+- [动态图演示Promises&AsyncAwait的过程](./JavaScript/动态图演示Promises&AsyncAwait的过程.md)
 # http
 - [巩固你的HTTP知识体系.md](./网络/巩固你的HTTP知识体系.md)
 # css
