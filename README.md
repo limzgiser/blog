@@ -23,8 +23,8 @@
 -   [4.call-apply-bind](./JavaScript/4.call-apply-bind.md)
 -   [5.1.JavaScript深入之从原型到原型链](./JavaScript/5.1.JavaScript深入之从原型到原型链.md)
 -   [5.2.Javascript深入之词法作用域和动态作用域](./JavaScript/5.2.Javascript深入之词法作用域和动态作用域.md)
--   [5.3.JavaScript深入之执行上下文栈](./JavaScript/5.3.JavaScript深入之执行上下文栈 .md)
--   [6.JavaScript执行机制](./JavaScript/6.JavaScript执行机制.md)
+-   [5.3.JavaScript深入之执行上下文栈](./JavaScript/5.3.JavaScript深入之执行上下文栈.md)
+-   [5.4.JavaScript深入之变量对象](./JavaScript/5.4.JavaScript深入之变量对象.md)
 # http
 
 -   [巩固你的 HTTP 知识体系.md](./网络/巩固你的HTTP知识体系.md)
