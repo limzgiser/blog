@@ -17,12 +17,13 @@
 
 ## JavaScript
 
--   [call-apply-bind](./JavaScript/call-apply-bind.md)
--   [动态图演示 Promises&AsyncAwait 的过程](./JavaScript/动态图演示Promises&AsyncAwait的过程.md)
--   [正则表达式](./JavaScript/正则表达式.md)
--   [JavaScript执行机制](./JavaScript/JavaScript执行机制.md)
--   [JavaScript深入之从原型到原型链](./JavaScript/JavaScript深入之从原型到原型链.md)
-
+-   [1.JavaScript执行机制](./JavaScript/1.JavaScript执行机制.md)
+-   [2.动态图演示 Promises&AsyncAwait 的过程](./JavaScript/2.动态图演示Promises&AsyncAwait的过程.md)
+-   [3.正则表达式](./JavaScript/3.正则表达式.md)
+-   [4.call-apply-bind](./JavaScript/4.call-apply-bind.md)
+-   [5.1.JavaScript深入之从原型到原型链](./JavaScript/5.1.JavaScript深入之从原型到原型链.md)
+-   [5.2.Javascript深入之词法作用域和动态作用域](./JavaScript/5.2.Javascript深入之词法作用域和动态作用域.md)
+-   [6.JavaScript执行机制](./JavaScript/6.JavaScript执行机制.md)
 # http
 
 -   [巩固你的 HTTP 知识体系.md](./网络/巩固你的HTTP知识体系.md)
