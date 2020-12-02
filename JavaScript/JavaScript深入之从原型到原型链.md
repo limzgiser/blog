@@ -1,0 +1,83 @@
+原文地址：https://github.com/mqyqingfeng/Blog/issues/2
+
+------
+
+#### 构造函数创建对象
+
+- **prototype**
+  - 每个函数都有一个 prototype 属性
+  - 函数的 prototype 属性指向了一个对象，这个对象正是调用该构造函数而创建的**实例**的原型
+  - 每一个JavaScript对象(null除外)在创建的时候就会与之关联另一个对象，这个对象就是我们所说的原型，每一个对象都会从原型"继承"属性
+- ```__proto__``
+  - 这是每一个JavaScript对象(除了 null )都具有的一个属性，叫__proto__，这个属性会指向该对象的原型。
+  - ``console.log(person.__proto__ === Person.prototype); // true``
+- **constructor**
+  - 每个原型都有一个 constructor 属性指向关联的构造函数
+  - ``console.log(Person === Person.prototype.constructor); // true``
+
+#### 实例与原型
+
+- 当读取实例的属性时，如果找不到，就会查找与对象关联的原型中的属性，如果还查不到，就去找原型的原型，一直找到最顶层为止
+
+#### 原型的原型
+
+- 原型也是一个对象，既然是对象，我们就可以用最原始的方式创建它
+
+  - ```javassc
+    var obj = new Object();
+    obj.name = 'Kevin'
+    console.log(obj.name) // Kevin
+    ```
+
+- 其实原型对象就是通过 Object 构造函数生成的
+
+#### 原型链
+
+- Object.prototype 的原型是null
+- ![](E:\mygithub\blog\assets\原型链.png)
+- 图中由相互关联的原型组成的链状结构就是原型链，也就是蓝色的这条线
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

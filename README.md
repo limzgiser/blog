@@ -20,6 +20,8 @@
 -   [call-apply-bind](./JavaScript/call-apply-bind.md)
 -   [动态图演示 Promises&AsyncAwait 的过程](./JavaScript/动态图演示Promises&AsyncAwait的过程.md)
 -   [正则表达式](./JavaScript/正则表达式.md)
+-   [JavaScript执行机制](./JavaScript/JavaScript执行机制.md)
+-   [JavaScript深入之从原型到原型链](./JavaScript/JavaScript深入之从原型到原型链.md)
 
 # http
 
