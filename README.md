@@ -26,6 +26,7 @@
 -   [5.3.JavaScript深入之执行上下文栈](./JavaScript/5.3.JavaScript深入之执行上下文栈.md)
 -   [5.4.JavaScript深入之变量对象](./JavaScript/5.4.JavaScript深入之变量对象.md)
 -   [5.5.JavaScript深入之作用域链](./JavaScript/5.5.JavaScript深入之作用域链.md)
+-   [5.6.JavaScript深入之闭包](./JavaScript/5.6.JavaScript深入之闭包.md)
 # http
 
 -   [巩固你的 HTTP 知识体系.md](./网络/巩固你的HTTP知识体系.md)
