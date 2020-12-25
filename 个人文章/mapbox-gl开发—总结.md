@@ -4,6 +4,38 @@ MapboxGL官方文档中API、案例和样式标准，写的很全。Demo中涵�
 
 **注意：以下关键代码函数是在继承 了mapboxgl.Map的类中编写，即：this 是指 mapboxgl.Map 实例。**
 
+### 拦截请求
+
+如果我们使用的是本地化的地图服务，这很有用。因为，我们的服务包括静态资源需要追加一个token才可以访问。mapbox服务资源类型包括以以下几种，可以针对不同资源类型做响应的网络拦截，重写请求。
+
+- Style
+- SpriteJSON
+- SpriteImage
+- Tile
+- Glyphs
+
+```javascript
+ 
+var map = new mapboxgl.Map({
+  container: "map",
+  center: [-122.420679, 37.772537],
+  zoom: 13,
+  style: style_object,
+  hash: true,
+  transformRequest: (url, resourceType) => {
+    if (resourceType === "Source" && url.startsWith("http://myHost")) {
+      return {
+        url: url.replace("http", "https"),
+        headers: { "my-custom-header": true },
+        credentials: "include", // Include cookies for cross-origin requests
+      };
+    }
+  },
+});
+```
+
+
+
 ### 底图切换
 
 我之前的文章中有简要说明过实现原理,[看这里](https://zhuanlan.zhihu.com/p/163248525)。
@@ -361,7 +393,7 @@ bindMapEvent() {
 
 ### 解决图层事件冲突
 
-如果需要给地图上两个相互叠加并且相互重贴的图层绑定点击事件，当我们点击上面一个图层的时候，会同时触发下面图层的回调函数。这当然是理所当然的，因为我们确实需要订阅两个图层的点击事件。某些应用场景中，我们就希望只触发上层图层的点击事件，改怎么处理。
+如果需要给地图上两个相互叠加并且相互重贴的图层绑定点击事件，当我们点击上面一个图层的时候，会同时触发下面图层的回调函数。这当然是理所当然的，因为我们确实需要订阅两个图层的点击事件。某些应用场景中，我们就希望只触发上层图层的点击事件，该怎么处理。
 
 ``e.preventDefault()``会阻止mapbox一写默认行为，它并不会阻止我们自己代码里的一些冲突。幸运的是，在调用``e.preventDefault()``之后，``e.defaultPrevented``会被修改为true。因此我们可以这么处理：
 
