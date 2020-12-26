@@ -458,6 +458,22 @@ generatedFeatureId(geojson) {
 }
 ```
 
+### 地图定位
+
+[turf](http://turfjs.org/)是一个很不错的空间处理分析库。就拿mabpx fitBounds功能来说，我们要fit到一个要素，也有可能是个图层。不用自己去计算外包矩形，直接使用turf空间处理函数。
+
+```javascript
+import { bbox } from '@turf/turf';
+var bound = bbox({
+          type: 'FeatureCollection',
+          features: [],
+        });
+ this.mapboxglmap.fitBounds(bound, { padding: 50 });
+
+```
+
+
+
 
 
 
