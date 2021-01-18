@@ -1,0 +1,104 @@
+### 一、基础类型
+
+- 布尔
+
+  - ```javascript
+    let bool:boolean  = true;
+    ```
+
+- 数值
+
+  - ```javascript
+    let num:number = 1 ;
+    num = 0b1111011; // 二进制 123
+    num = 0o173;   // 八  进制 123
+    num = 0x7b;  //  十六 进制 123
+    ```
+
+- 字符串
+
+  - ```javascript
+    let str:string = 'abc';
+    ```
+
+- 数组
+
+  - ```javascript
+    let arr:number [] =  [1,2,3];
+    let arr2:Array<number> = [1,2,3];
+    let arr3:Array<number|string> = [1,2,3,'a','b']; // 联合类型
+    ```
+
+- 元祖
+
+  - ```javascript
+    let tuuple:[string,number,boolean]= ['a',1,false]; // 注意顺序，不能多也不能少
+    ```
+
+- 枚举
+
+  - ```javascript
+    enum Roles {
+        SUPER_ADMIN = 0 ,
+        ADMIN = 2,
+        USER = 8,
+    }
+    ```
+
+- any
+
+  - ```javascript
+    let val:any = {} ;// 可以赋值任意类型
+    ```
+
+- void
+
+  - ```javascript
+    const consoleText = (text:string):void=> {
+        console.log(text);
+    }
+    let v:void = undefined;
+    ```
+
+- null 和undefined
+
+  - ```javascript
+    let a :undefined  = undefined;
+    let n :null  = null;
+    ```
+
+- never 
+
+  - ```javascript
+    const errorFunc = (message:string):never=>{
+        throw  new Error(message)
+    }
+    const infiniteFunc = ():never=>{
+        while(true){
+        }
+    }
+    ```
+
+- object
+
+  - ```javascript
+    let obj = {
+        name:'zhangs'
+    }
+    function getObj(obj:object):void {
+        console.log(obj)
+    }
+    ```
+
+- 类型断言
+
+  - ```javascript
+    const getLength = (target:string | number):number=>{
+        if((<string>target).length || (target as string).length ===0){
+            return (<string>target).length;
+        }else{
+            return target.toString().length;
+        }
+    }
+    ```
+
