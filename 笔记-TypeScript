@@ -1,104 +1,422 @@
 ### 一、基础类型
 
-- 布尔
+#### 布尔
 
-  - ```javascript
-    let bool:boolean  = true;
-    ```
+```javascript
+let bool:boolean  = true;
+```
 
-- 数值
+#### 数值
 
-  - ```javascript
-    let num:number = 1 ;
-    num = 0b1111011; // 二进制 123
-    num = 0o173;   // 八  进制 123
-    num = 0x7b;  //  十六 进制 123
-    ```
+```javascript
+let num:number = 1 ;
+num = 0b1111011; // 二进制 123
+num = 0o173;   // 八  进制 123
+num = 0x7b;  //  十六 进制 123
+```
 
-- 字符串
+#### 字符串
 
-  - ```javascript
-    let str:string = 'abc';
-    ```
+```javascript
+let str:string = 'abc';
+```
 
-- 数组
+#### 数组
 
-  - ```javascript
-    let arr:number [] =  [1,2,3];
-    let arr2:Array<number> = [1,2,3];
-    let arr3:Array<number|string> = [1,2,3,'a','b']; // 联合类型
-    ```
+```javascript
+let arr:number [] =  [1,2,3];
+let arr2:Array<number> = [1,2,3];
+let arr3:Array<number|string> = [1,2,3,'a','b']; // 联合类型
+```
 
-- 元祖
+#### 元祖
 
-  - ```javascript
-    let tuuple:[string,number,boolean]= ['a',1,false]; // 注意顺序，不能多也不能少
-    ```
+```javascript
+let tuuple:[string,number,boolean]= ['a',1,false]; // 注意顺序，不能多也不能少
+```
 
-- 枚举
+#### 枚举
 
-  - ```javascript
-    enum Roles {
-        SUPER_ADMIN = 0 ,
-        ADMIN = 2,
-        USER = 8,
+```javascript
+enum Roles {
+    SUPER_ADMIN = 0 ,
+    ADMIN = 2,
+    USER = 8,
+}
+```
+
+#### any
+
+```javascript
+let val:any = {} ;// 可以赋值任意类型
+let val2:any =  123 ;// 可以赋值任意类型
+```
+
+#### void
+
+```javascript
+const consoleText = (text:string):void=> {
+    console.log(text);
+}
+let v:void = undefined;
+```
+
+#### null 和undefined
+
+```javascript
+let a :undefined  = undefined;
+let n :null  = null;
+```
+
+#### never 
+
+> 永远不会有返回值
+
+```javascript
+const errorFunc = (message:string):never=>{
+    throw  new Error(message)
+}
+const infiniteFunc = ():never=>{
+    while(true){
     }
-    ```
+}
+```
 
-- any
+#### object
 
-  - ```javascript
-    let val:any = {} ;// 可以赋值任意类型
-    ```
+```javascript
+let obj = {
+    name:'zhangs'
+}
+function getObj(obj:object):void {
+    console.log(obj)
+}
+```
 
-- void
+#### 类型断言
 
-  - ```javascript
-    const consoleText = (text:string):void=> {
-        console.log(text);
+```javascript
+const getLength = (target:string | number):number=>{
+    if((<string>target).length || (target as string).length ===0){
+        return (<string>target).length;
+    }else{
+        return target.toString().length;
     }
-    let v:void = undefined;
-    ```
+}
+```
 
-- null 和undefined
+### 二、Symbols
 
-  - ```javascript
-    let a :undefined  = undefined;
-    let n :null  = null;
-    ```
+> ```
+> 用来表示独一无二值
+> ```
 
-- never 
+#### 创建
 
-  - ```javascript
-    const errorFunc = (message:string):never=>{
-        throw  new Error(message)
+```javascript
+const s1 = Symbol();
+const s2 = Symbol();
+// console.log(s1==s2); // false
+```
+
+#### 参数(参数)
+
+> 字符串参数 用于标识,在ts中参数只能是数字或字符串， 如果传入的是数字会将数字转为字符串
+
+```javascript
+const s3 = Symbol('zhangs');
+const s4 = Symbol('zhangs');
+console.log(s3===s4); // false
+```
+
+#### 运算
+
+> 不能和其他类型值做运算
+
+#### 类型转换
+
+```javascript
+console.log(s3.toString()) //Symbol(zhangs)
+console.log(Boolean(s3)); // true
+```
+
+#### 作为属性名
+
+```javascript
+let prop = 'school'
+const info = {
+    name:"zhangs",
+    [prop]:'beida'
+}
+const s5 = Symbol('name');
+let info2 = {
+    [s5]:'zhangs'
+}
+info2[s5] = 'lisi';
+```
+
+#### 遍历
+
+> **无法获取对象Symbol属性名**
+
+- for in 
+- Object.keys
+- Object.getOwnPropertyNames
+- JSON.stringify
+
+> **可以获取对象Symbol属性名**
+
+- Object.getOwnPropertySymbols
+- Reflect.ownKeys
+
+#### Symbol.for
+
+> 同样一个字符串创建的Symbol是不一样的;Symbol.for()会在全局范围创建一个值，同一个key创建的Symbol类型值是一样的。
+
+```javascript
+let s8 = Symbol.for('name');
+let s9 =  Symbol.for('name');
+console.log(s8 ==s9) // true
+let key = Symbol.keyFor(s8);
+console.log(key)
+```
+
+#### Symbol.keyFor
+
+> 获取Symbol的key值
+
+```javascript
+let s8 = Symbol.for('name');
+let key = Symbol.keyFor(s8);
+console.log(key) // name
+```
+
+#### 内置的Symbol值
+
+##### Symbol.hasInstance
+
+> 方法，会被instanceof运算符调用。构造器对象用来识别一个对象是否是其实例。
+>
+> instanceof 判断对象是否为xx的实例
+
+```javascript
+const obj = {
+    [Symbol.hasInstance](otherObj:any){
+        console.log(otherObj);
     }
-    const infiniteFunc = ():never=>{
-        while(true){
-        }
-    }
-    ```
+}
+console.log({a:'a'}  instanceof <any> obj); // false
+```
 
-- object
+##### Symbol.isConcatSpreadable
 
-  - ```javascript
-    let obj = {
-        name:'zhangs'
-    }
-    function getObj(obj:object):void {
-        console.log(obj)
-    }
-    ```
+> 布尔值，表示当在一个对象上调用Array.prototype.concat时，这个对象的数组元素是否可展开。
 
-- 类型断言
+```javascript
+let arr2:any  = [1,2];
+// @ts-ignore
+console.log([].concat(arr2,[3,4])); //  [1, 2, 3, 4]
+arr2[Symbol.isConcatSpreadable] = false;
+// @ts-ignore
+console.log([].concat(arr2,[3,4])); // arr2 不会被扁平化 [[1,2],2,4]
+```
 
-  - ```javascript
-    const getLength = (target:string | number):number=>{
-        if((<string>target).length || (target as string).length ===0){
-            return (<string>target).length;
-        }else{
-            return target.toString().length;
-        }
+##### Symbol.species
+
+> 函数值，为一个构造函数。用来创建派生对象。
+
+```javascript
+class C extends Array {
+    constructor(...args: number[]) {
+        super(...args);
     }
-    ```
+    // es6中不写 打印都为true
+    static get [Symbol.species](){
+        return Array;
+    }
+    getName(){
+        return '张三'
+    }
+}
+const  cc = new C(1,2,3);
+const a = cc.map(item=>item+1);
+console.log(a);  // [2,3,4]
+console.log(a instanceof C); // false
+console.log(a instanceof Array); // true
+```
+
+##### Symbol.match
+
+> 方法，被String.prototype.match调用。正则表达式用来匹配字符串。
+
+```javascript
+let obj3 = {
+    [Symbol.match](string:string){
+        console.log(string.length)
+    }
+}
+'aabced'.match(<RegExp>obj3); // 6
+```
+
+##### Symbol.replace
+
+> 方法，被String.prototype.replace调用。正则表达式用来替换字符串中匹配的子串。
+
+##### Symbol.search
+
+> 方法，被String.prototype.search调用。正则表达式返回被匹配部分在字符串中的索引。
+
+##### Symbol.split
+
+> 方法，被String.prototype.split调用。正则表达式来用分割字符串。
+
+##### Symbol.iterator
+
+> 方法，被for-of语句调用。返回对象的默认迭代器。
+
+```javascript
+const array1 = [1,2,3,4];
+const iterator:any = array1[Symbol.iterator]();
+console.log(iterator.next()) // {value: 1, done: false}
+```
+
+##### toPrimitive
+
+> 方法，被ToPrimitive抽象操作调用。把对象转换为相应的原始值。
+
+```javascript
+let obj4:any = {
+    [Symbol.toPrimitive](type:any){
+        console.log(type) // number
+    }
+}
+const res  = (obj4 as number) ++;
+```
+
+##### Symbol.toStringTag
+
+> 方法，被内置方法Object.prototype.toString调用。返回创建对象时默认的字符串描述。
+
+```javascript
+let obj5 = {
+    [Symbol.toStringTag]:"zhangs"
+}
+console.log(obj5.toString()) // [object zhangs]
+```
+
+##### Symbol.unscopables
+
+> 对象，它自己拥有的属性会被with作用域排除在外。
+
+### 三、接口
+
+> 使用接口限定对象、函数结构
+
+##### 定义接口
+
+```javascript
+interface nameInfo {
+    firstName:string;
+    lastName:string;
+}
+const getFullName = ({firstName,lastName}:nameInfo):string=>{
+    return firstName + lastName
+}
+let fullName:string = getFullName({
+    firstName:'1',
+    lastName:'san'
+});
+console.log(fullName)
+```
+
+##### 可选属性
+
+```javascript
+interface Vegetable {
+    color?:string;
+    type:string;
+}
+const getVegetables:any = ({color,type}:Vegetable):string=>{
+    return  `${color?color:''} ${type}`;
+}
+console.log(getVegetables({type:"tomato",}));
+```
+
+##### 只读属性
+
+```javascript
+interface Point {
+    readonly x: number;
+    readonly y: number;
+}
+```
+
+> 创建只读数组
+
+```javascript
+let a: number[] = [1, 2, 3, 4];
+let ro: ReadonlyArray<number> = a;
+ro[0] = 12; // error!
+ro.push(5); // error!
+ro.length = 100; // error!
+a = ro; // error!
+```
+
+##### 定义函数结构
+
+```javascript
+interface AddFunc {
+    (num1:number,num2:number):number
+}
+type addFunc2 = (num1:number,num2:number)=> number;
+
+const add:AddFunc = (n1,n2)=>n1+n2;
+```
+
+##### 索引类型
+
+```javascript
+interface RoleDic {
+    [id:number]:string
+}
+const role1:RoleDic = {
+    0:'abc'
+}
+```
+
+##### 接口继承
+
+```javascript
+interface Vegetables {
+    color:string;
+}
+interface Tomato  extends Vegetables{
+    radius:number
+}
+const tomato:Tomato = {
+    radius:1,
+    color:"red"
+}
+```
+
+##### 混合类型
+
+```JavaScript
+interface Counter {
+    ():void;
+    count:number
+}
+const getCounter = ():Counter=>{
+    const c = ()=>{c.count++}
+    c.count = 0 ;
+    return c ;
+}
+const counter :Counter = getCounter();
+counter();
+console.log(counter.count); //1
+counter();
+console.log(counter.count);//2
+counter();
+console.log(counter.count);//3
+```
 
