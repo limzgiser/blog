@@ -420,3 +420,125 @@ counter();
 console.log(counter.count);//3
 ```
 
+### 四、函数
+
+##### 函数类型
+
+> 指定 myAdd 类型参数类型和返回值类型，并赋值指定类型的函数
+
+```javascript
+let myAdd: (x: number, y: number) => number = function (
+  x: number,
+  y: number
+): number {
+  return x + y;
+};
+```
+
+##### 推断类型
+
+> 赋值语句的一边指定了类型但是另一边没有类型的话，TypeScript编译器会自动识别出类型
+
+```javascript
+let myAdd2: (baseValue: number, increment: number) => number = function (x, y) {
+  return x + y;
+};
+```
+
+##### 可选参数和默认参数
+
+- 可选参数必须跟在必须参数后面
+
+```javascript
+function buildName(firstName: string, lastName?: string) {
+  if (lastName) return firstName + " " + lastName;
+  else return firstName;
+}
+let result1 = buildName("Bob"); // works correctly now
+let result3 = buildName("Bob", "Adams"); // ah, just right
+```
+
+-  默认初始化值的参数；为参数提供一个默认值当用户没有传递这个参数或传递的值是`undefined`。
+
+```javascript
+function buildName(firstName: string, lastName = "Smith") {
+    return firstName + " " + lastName;
+}
+let result1 = buildName("Bob");                  // works correctly now, returns "Bob Smith"
+let result2 = buildName("Bob", undefined);       // still works, also returns "Bob Smith"
+let result3 = buildName("Bob", "Adams", "Sr.");  // error, too many parameters
+let result4 = buildName("Bob", "Adams");         // ah, just right
+```
+
+##### 剩余参数
+
+- TypeScript中，可以把所有参数收集到一个变量里
+
+```javascript
+function buildName(firstName: string, ...restOfName: string[]) {
+  return firstName + " " + restOfName.join(" ");
+}
+let buildNameFun: (fname: string, ...rest: string[]) => string = buildName;
+```
+
+### 五、泛型
+
+##### 泛型变量
+
+- 定义函数指定泛型，
+- 调用函数时，传入可变类型参数
+
+```javascript
+const getArray = (value:any,times:number =5):any[] => {
+    return new Array(times).fill(value);
+}
+const getArray2 = <T>(value:T,times:number =5):T[] => {
+    return new Array(times).fill(value);
+}
+console.log(getArray2<string>('abc',3).map(item=>item.length));
+
+const getArray3 = <T,U>(param1:T,params2:U,times:number):Array<[T,U]> =>{
+    return  new  Array(times).fill([param1,params2]);
+}
+getArray3<number,string>(1,'a',3).forEach(item=>{
+    console.log(item[0]) ;
+    console.log(item[1]);
+})
+```
+
+##### 泛型类
+
+```javascript
+class GenericNumber<T> {
+    zeroValue: T;
+    add: (x: T, y: T) => T;
+}
+let myGenericNumber = new GenericNumber<number>();
+myGenericNumber.zeroValue = 0;
+myGenericNumber.add = function(x, y) { return x + y; };
+```
+
+##### 泛型约束
+
+- 约束泛型参数需要好友length属性
+
+```javascript
+interface ValueWidthLength {
+    length:number
+}
+const getArray = <T extends ValueWidthLength>(arg:T,times:number):T[]=>{
+    return new Array(times).fill(arg);
+}
+getArray([1,2],3);
+```
+
+### 六、ES6类
+
+
+
+
+
+
+
+
+
