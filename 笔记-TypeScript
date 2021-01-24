@@ -534,9 +534,625 @@ getArray([1,2],3);
 
 ### 六、ES6类
 
+##### 定义类
 
+-  只能使用new 创建
 
+```javascript
+class Point{
+    constructor(x,y){
+        this.x = x;
+        this.y = y;
+    }
+    getPostion(){
+        return `${this.x},${this.y}`
+    }
+}
+const p1 = new Point(1,2);
+console.log(p1.getPostion());
+console.log(p1.hasOwnProperty('x')); // true
+console.log(p1.__proto__.hasOwnProperty('getPostion'));// true
+```
 
+##### 取值函数和存值函数set get
+
+###### es5
+
+```javascript
+var info ={
+    _age:18,
+    set age(newValue){
+        if(newValue>18){
+            console.log('怎么变老了');
+        }else{
+            console.log('我还年轻');
+        }
+    },
+    get age(){
+        console.log('问我年龄干嘛');
+        return  this._age
+    }
+}
+console.log(info.age); // 问我年龄干嘛；18;
+info.age = 13; // 我还年轻
+```
+
+###### es6
+
+```javascript
+class Info{
+    constructor(age){
+        this._age = age;
+    }
+    set age(newAge){
+        console.log('new age is ' + newAge);
+        this._age = newAge;
+    }
+    get age(){
+       return this._age;
+    }
+}
+const infos = new Info(18);
+infos.age = 17;
+console.log(infos.age);
+```
+
+##### class 表达式
+
+```javascript
+const Infos = class c{
+    constructor(){ }
+}
+// const testInfo = new c(); // c is not defined
+const testInfo = new Infos(); // sucess
+// 也可以这么定义
+const Infos2 = class {
+}
+```
+
+##### 静态方法
+
+```javascript
+class Point {
+    constructor(x,y){
+        this.x = x; 
+        this.y = y ; 
+    }
+    getPostion(){
+        return `${this.x},${this.y}`
+    }
+    static getClassName(){
+        return Point.name;
+    }
+}
+const p = new Point(1,2);
+console.log(p.getPostion());
+console.log(Point.getClassName());
+
+```
+
+##### 实例属性的其他写法
+
+```javascript
+ class Point {
+    z= 1;
+    constructor(x,y){
+        this.x = x; 
+        this.y = y ; 
+    }
+    getPostion(){
+        return `${this.x},${this.y}`
+    }
+    static getClassName(){
+        return Point.name;
+    }
+}
+```
+
+##### 静态属性
+
+> es6只有静态方法没有静态属性，可以这么写
+
+```javascript
+class Point{
+    constructor(){
+        this.x = 0 ; 
+    }
+}
+Point.y = 2 ;
+const p = new Point();
+console.log(p.x); //  0
+console.log(p.y); // undefined
+console.log(Point.y); // 2
+```
+
+##### 私有方法
+
+> es6中没有私有方法、属性；可以这么写
+
+- 通过命名约定、意义不大
+
+```javascript
+class Point {
+    func(){
+    }
+    _func(){
+    }
+}
+```
+
+- 将私有方法移除模块
+
+```javascript
+{
+    const _func2 = ()=>{
+        console.log('_func2 私有方法');
+    };
+    class Point{
+        constructor(){ }
+        func1(){
+            _func2.call(this);
+        }
+    }   
+    const p = new Point();
+    p.func1();
+    // p._func2(); // error 
+}
+```
+
+- 使用Symbol
+
+- > 如果模块中未导出Symbol值，外部是无法访问使用Symbol变量名定义的函数
+
+```javascript
+//a.js
+const func1 = Symbol('func1');
+export default class Point{
+    static [func1](){ }
+}
+// b.js 
+import Point from 'a.js'
+const p = new Point();
+console.log(p);
+```
+
+##### 私有属性
+
+- es6中没有私有属性
+
+```javascript
+// class Point{
+//     #ownProp = 12; // 提案中，暂时无法使用。
+// }
+```
+
+##### new.target
+
+- 可以断定是不是通过new 来调用的构造函数
+
+###### es5
+
+```javascript
+function Point(){
+    console.log(new.target);
+}
+const p = new Point(); // 返回Point构造函数
+const p2 = Point(); // undefined
+```
+
+###### es6
+
+```javascript
+class Point{
+    constructor(){
+        console.log(new.target);
+    }
+}
+const p = new Point(); // 打印Point构造函数
+```
+
+- 父类中判断new.target 限制只能使用子类来创建实例
+
+- > new Child ，父类的构造函数中打印的是子类的构造函数
+
+```javascript
+class Parent {
+    constructor(){
+         console.log(new.target);
+        if(new.target ==Parent ){
+            throw new Error('不能实例化')
+        }
+    }
+}
+class Child extends Parent{
+    constructor(){
+        super();
+    }
+}
+// const c  = new Parent() ; // 不能实例化
+const c2 = new Child();  // 打印子类构造函数
+```
+
+##### 类继承
+
+###### 定义类
+
+```javascript
+class Parent {
+    constructor(name){
+        this.name = name;
+    }
+    getName(){
+        return this.name;
+    }
+    static getNames(){
+        return this.name;
+    }
+}
+class Child extends Parent{
+    constructor(name,age){
+        super(name);
+        this.age = age; // 注意顺序、在super之后
+    }
+}
+const c  = new Child('zhans',18);
+console.log(c);
+console.log(c.getName());
+console.log(c instanceof Child); // true
+console.log(c instanceof Parent); // true
+console.log(Child.getNames()); // Child -- 继承父类的静态方法
+// 获取构造函数的原型对象
+console.log(Object.getPrototypeOf(Child)== Parent); // true 
+```
+
+###### super
+
+- super作为函数
+  - 表示父类的构造函数，
+  - 子类必须调用,而且只能在构造函数中使用
+- super作为对象
+  - 普通方法中，指向父类的原型对象
+  - 静态方法中，指向父类本身
+
+```javascript
+class Parent {
+    constructor(){
+        this.type= 'parent';
+    }
+    getName(){
+        return this.type;
+    }
+}
+Parent.getType() = ()=>{
+    return 'is parent'
+}
+class Child extends Parent {
+        constructor(){
+            super();
+            console.log('constructor: ' + super.getName());
+        }
+        getParentName(){
+            console.log('getParentName: '+super.getName());
+        }
+       static  getParentType(){
+            console.log('getParentTyp: '+super.getType());
+        }
+}
+const c = new Child(); // constructor: parent
+c.getParentName();    // getParentName: parent
+Child.getParentType(); // getParentTyp: is parent
+```
+
+###### this指向
+
+- 子类使用super调用，父类的原型方法；父类原型方法中的this指向的是子类的实例
+
+```javascript
+class Parent {
+    constructor(){
+        this.name= 'parent';
+    }
+    print(){
+        console.log(this.name); // super调用，this指向子类的实例
+    }
+}
+class Child extends Parent {
+        constructor(){
+            super();
+           this.name = 'child'
+        }
+        childPrint(){
+            super.print(); 
+        }
+}
+const c  = new Child();
+c.childPrint();  // child
+```
+
+###### ``4、prototype``和 ``__proto__``
+
+-  ``__proto__`` 不是es标准中的属性，而是 大多数浏览器厂商在对es的实现中添加的
+- 每一个 对象都有一个 ``__proto__`` 属性，它指向对应的构造函数的 prototype 属性
+
+```javascript
+var objs = new Object();
+console.log(objs.__proto__===Object.prototype); // true
+```
+
+**es6中：**
+
+- 子类的  ``__proto__``指向父类本身
+
+- 子类的 prototype 属性的  ``__proto__``指向父类的 prototype 属性
+
+- 实例的  ``__proto__``属性的  ``__proto__``指向父类实例的  ``__proto__``
+
+###### 原生构造函数的继承
+
+- Boolean
+- Number
+- String
+- Array
+- Date
+- Function
+- RegExp
+- Error
+- Object
+
+```javascript
+class CUstomArray extends Array{
+    constructor(...args){
+        super(...args)
+    }
+}
+const arr = new CUstomArray(3);
+console.log(arr.fill('+'));
+```
+
+### 七、TS类
+
+- ts中的修饰符
+
+```javascript
+class Point{
+   public x:number;
+   public y:number;
+    constructor(x:number,y:number){
+        this.x = x ;
+        this.y = y ;
+    }
+    public getPostions(){
+        return  `${this.x},${this.y}`;
+    }
+}
+const point = new Point(1,2);
+console.log(point);
+class Parent {
+    name:string;
+    constructor(name:string){
+        this.name = name;
+    }
+}
+class Child extends Parent{
+    constructor(name:string){
+        super(name);
+    }
+}
+```
+
+###### public
+
+###### private
+
+```javascript
+class Parent {
+  private age: number;
+  constructor(age: number) {
+    this.age = age;
+  }
+}
+const p = new Parent(18);
+// console.log(p.age); // 无法访问
+class Child extends Parent{
+    constructor(age:number){
+        super(age);
+        // console.log(super.age); // 无法访问
+    }
+}
+```
+
+###### protected
+
+- 子类中通过super只能访问父类的公共方法和受保护的方法、无法拿到属性
+
+```javascript
+class Parent {
+    protected age: number;
+    constructor(age: number) {
+      this.age = age;
+    }
+    protected getAge(){
+        return this.age;
+    }
+  }
+  const p = new Parent(18);
+  // console.log(p.age); // 无法访问
+  class Child extends Parent{
+      constructor(age:number){
+          super(age);
+        //    console.log(super.age); // 无法访问
+           console.log(super.getAge()) ; // 可以访问
+      }
+  }
+```
+
+- > protected修饰constructor时候 ，不能通过父类创建实例、只能通过子类创建
+
+###### readonly
+
+```javascript
+class UserInfo {
+  public readonly name: string;
+  constructor(name: string) {
+    this.name = name;
+  }
+}
+const userInfo = new UserInfo("zhangs");
+console.log(userInfo.name);
+//   userInfo .name = 'lisi'; // 只读，不能赋值
+```
+
+###### 参数属性
+
+- 构造函数中使用修饰符，自动定义类属性
+
+```javascript
+class A{
+    constructor(public name:string){ }
+}
+const a1 = new A('zhangs');
+console.log(a1.name); // zhangs
+```
+
+###### 静态属性
+
+- 通过类名访问
+
+```javascript
+class Parent{
+    public static age:number = 18;
+    public static getAge(){
+        return Parent.age;
+    }
+    constructor(){  }
+}
+const p = new Parent();
+console.log(Parent.age); // 18
+console.log(Parent.getAge()); // 18
+```
+
+###### 可选类属性
+
+```javascript
+class Info {
+    public name:string;
+    public age?:number;
+    constructor(name:string,age?:number,public sex?:string){
+        this.name = name;
+        this.age = age;
+    }
+}
+const info1 = new Info('zhangs');
+const info3 = new Info('zhangs',18);
+const info4 = new Info('zhangs',18,'main');
+// age: undefined
+// name: "zhangs"
+// sex: undefined
+console.log(info1);
+// age: undefined
+// name: "zhangs"
+// sex: 18
+console.log(info3);
+// age: 18
+// name: "zhangs"
+// sex: man
+console.log(info4);
+```
+
+###### 存取器
+
+```javascript
+class Info {
+    private _infoStr :string | undefined;
+    public name:string;
+    public age?:number;
+    constructor(name:string,age?:number,public sex?:string){
+        this.name = name;
+        this.age = age;
+    }
+    get infoStr(){
+        return this._infoStr;
+    }
+    set infoStr(value){
+        console.log(`setter:${value}`);
+        this._infoStr = value;
+    }
+    getPriStr(){
+        return this._infoStr;
+    }
+}
+
+const info4 = new Info('zhangs',18,'main');
+info4.infoStr = 'zhangs:14'
+console.log(info4.getPriStr());
+```
+
+###### 抽象类
+
+- 不能直接创建、通过继承类创建
+
+```javascript
+abstract class Poeple {
+  constructor(public name: string) {}
+  public abstract printName(): void;
+}
+class Man extends Poeple {
+  constructor(name: string) {
+    super(name);
+    this.name = name;
+  }
+  public printName(): void {
+    console.log(this.name);
+  }
+}
+const m = new Man("zhangs");
+m.printName();
+```
+
+###### 类类型接口
+
+- 类实现接口，类创建完的实例，要符合这个接口结构
+
+```javascript
+ interface FoodInstance{
+     type:string;
+ }
+ class FoodClass implements FoodInstance{
+    public type: string
+ }
+```
+
+###### 接口继承类
+
+```javascript
+ class A {
+     protected name:string;
+     constructor(name:string){
+        this.name = name;
+     }
+ }
+ interface I extends A{
+ }
+ class B extends A implements I {
+     protected name: string;
+ }
+
+```
+
+###### 泛型中使用类类型
+
+```javascript
+const create = <T>(c: new () => T) => {
+  return new c();
+};
+class Infos {
+  public age: number;
+  constructor() {
+    this.age = 18;
+  }
+}
+create<Infos>(Infos);
+```
 
 
 
