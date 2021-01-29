@@ -520,7 +520,7 @@ myGenericNumber.add = function(x, y) { return x + y; };
 
 ##### 泛型约束
 
-- 约束泛型参数需要好友length属性
+- 约束泛型参数需含有length属性
 
 ```javascript
 interface ValueWidthLength {
@@ -1153,6 +1153,359 @@ class Infos {
 }
 create<Infos>(Infos);
 ```
+
+### 八、枚举
+
+> ts支持数字和字符串两种枚举
+
+###### **数字枚举**
+
+```javascript
+enum Status{
+    Uploading,
+    Success,
+    Failed
+}
+console.log(JSON.stringify(Status)); // {"0":"Uploading","1":"Success","2":"Failed","Uploading":0,"Success":1,"Failed":2}
+console.log(Status.Uploading); // 0
+console.log(Status.Success);  // 1
+console.log(Status.Failed);   // 2
+
+enum Status2{
+    Uploading ,
+    Success  = 3,
+    Failed
+}
+console.log(Status2.Uploading); // 0
+console.log(Status2.Success);  // 3
+console.log(Status2.Failed);   // 4
+
+function getIndex(){
+    return 3;
+}
+
+enum Status3{
+    Uploading ,
+    Success  = getIndex(),
+    Failed = 4 // 必须指定
+}
+console.log(Status3.Uploading); // 0
+console.log(Status3.Success);  // 3
+console.log(Status3.Failed);   // 4
+```
+
+###### 字符串枚举
+
+```javascript
+enum Message {
+    Error='sory ,error',
+    Success='hii ,success',
+    Failed=Error
+}
+console.log(Message.Failed); //sory ,error
+```
+
+###### 异构枚举
+
+```javascript
+enum Result{
+    Success = 'success',
+    Failed  = 404,
+}
+console.log(JSON.stringify(Result)); //{"404":"Failed","Success":"success","Failed":404}
+
+// 枚举成员类型、联合枚举类型
+// 1.enum E { A }
+// 2.enum E { A = "a" } 
+// 3.enum E { A=-1 }
+enum Animal {
+    Dog = 1,
+    Cat = 2,
+}
+interface Dog {
+    type:Animal.Dog, // 作为类型
+}
+const dog : Dog = {
+    type:Animal.Dog // Animal.Cat 会报错
+}
+
+```
+
+######  **联合类型**
+
+```javascript
+enum Status  {
+    Off,
+    On,
+}
+interface Light {
+    status:Status
+}
+const light :Light ={
+    status:Status.Off // 或 Status.On 
+}
+```
+
+```javascript
+// // 编译后 不会编译成对象、只会编译成一个数字
+// const enum Animal {
+//     Dog = 1 ,
+// }
+```
+
+### 九、高级类型
+
+######  交叉类型
+
+```javascript
+const mergeFunc = <T, U>(arc1: T, arc2: U): T & U => {
+  let res = {} as T & U;
+  res = Object.assign(arc1, arc2);
+  return res;
+};
+```
+
+###### 联合类型
+
+```javascript
+function padLeft(value: string, padding: any) {
+    if (typeof padding === "number") {
+        return Array(padding + 1).join(" ") + value;
+    }
+    if (typeof padding === "string") {
+        return padding + value;
+    }
+    throw new Error(`Expected string or number, got '${padding}'.`);
+}
+padLeft("Hello world", 4); // returns "    Hello world"
+```
+
+###### 类型保护
+
+```javascript
+const valueList = [123, "abc"];
+const getRandomVlaue = () => {
+  const number = Math.random() * 10;
+  if (number < 5) {
+    return valueList[0];
+  } else {
+    return valueList[1];
+  }
+};
+const item = getRandomVlaue();
+if ((item as string).length) {
+  console.log((item as string).length);
+} else {
+  console.log((item as number).toFixed());
+}
+//
+function isString(value: number | string): value is string {
+  return typeof value === "string";
+}
+if (isString(item)) {
+  console.log(item.length);
+} else {
+  console.log(item.toFixed());
+}
+
+class CreatedByClass1 {
+  public age = 18;
+  constructor() {}
+}
+class CrateByClass2 {
+  public name = "zhangs";
+  constructor() {}
+}
+function getRandomItem() {
+  return Math.random() < 0.5 ? new CreatedByClass1() : new CrateByClass2();
+}
+let item2 = getRandomItem();
+if (item2 instanceof CreatedByClass1) {
+  console.log(item2.age);
+} else {
+  console.log(item2.name);
+}
+```
+
+###### 类型包含和类型断言
+
+```javascript
+const getLengthFunction = (value: string | null): number => {
+  return (value || "").length;
+};
+
+function getSpliceStr(num: number | null): string {
+  function getRes(prefix: string) {
+    return prefix + num!.toFixed().toString();
+  }
+  num = num || 0.1;
+  return getRes("zhangs-");
+}
+```
+
+###### 类型别名
+
+```javascript
+type TypeString = string;
+let str: TypeString;
+type PositionType<T> = { x: T; y: T };
+const p1: PositionType<number> = {
+  x: 1,
+  y: -1,
+};
+const p2: PositionType<string> = {
+  x: "left",
+  y: "right",
+};
+type Childs<T> = {
+  current: T;
+  child?: Childs<T>;
+};
+let ttt: Childs<string> = {
+  current: "first",
+  child: {
+    current: "second",
+    child: {
+      current: "third",
+    },
+  },
+};
+```
+
+###### this
+
+```javascript
+class Counters {
+  constructor(public count: number = 0) {}
+  public add(value: number) {
+    this.count += value;
+    return this;
+  }
+  public subtract(value: number) {
+    this.count -= value;
+    return this;
+  }
+}
+let counter1 = new Counters(10);
+console.log(counter1.add(3).subtract(2));
+
+class PowCounter extends Counters {
+  constructor(public count: number = 0) {
+    super(count);
+  }
+  public pow(value: number) {
+    this.count = this.count ** value;
+    return this;
+  }
+}
+let powCounter = new PowCounter(2);
+console.log(powCounter.pow(3).add(1).subtract(3));
+```
+
+###### 索引类型
+
+```javascript
+
+interface InfoInterfaceAdvanced {
+  name: string;
+  age: number;
+}
+let infoProp: keyof InfoInterfaceAdvanced;
+infoProp = "name";
+infoProp = "age";
+function getValue<T, K extends keyof T>(obj: T, names: K[]): T[K][] {
+  return names.map((n) => obj[n]);
+}
+const infoObj = {
+  name: "zhangs",
+  age: 12,
+};
+let infoValues: (string | number)[] = getValue(infoObj, ["name", "age"]);
+console.log(infoValues);
+```
+
+###### 索引访问操作符
+
+```javascript
+type NameTypes = InfoInterfaceAdvanced["name"];
+
+function getProperty<T, K extends keyof T>(o: T, name: K): T[K] {
+  return o[name];
+}
+interface Objs<T> {
+  [key: number]: T;
+}
+let keys: keyof Objs<number>;
+```
+
+###### 映射类型
+
+```javascript
+interface Info1 {
+  age: number;
+  name: string;
+  sex: string;
+}
+type ReadonlyType<T> = {
+  readonly [P in keyof T]: T[P];
+};
+type ReadOnlyInfo1 = ReadonlyType<Info1>;
+let info11 :ReadOnlyInfo1 = {
+    age:18,
+    name:'zhangs',
+    sex:'main'
+}
+```
+
+### 十、ES6模块
+
+###### export
+
+- 导出对外的接口，而不是一个具体的值
+- 导出是一个声明语句
+- export  当前模块中的值变化时，对应引入的模块中的值也会变化。
+
+- export 不能出现再块级作用域里
+- 一个模块只能使用一次export default
+
+```javascript
+
+export const name = "zhangs";
+export const age = 18;
+export const address = "bb";
+
+const name = "zhangs";
+const age = 18;
+const address = "bb";
+export { name, age, address };
+
+export function func() {}
+export class A {}
+
+function func1() {}
+class B {}
+const b = "";
+export { func1 as FUnction1, B as ClassB, b as StringB };
+
+function func(params) {}
+export { func as default };
+```
+
+###### import 
+
+- 引入的值是只读的
+- 如果是应用对象，可以修改对象中的值
+
+```javascript
+import { name as nameProp } from "./a";
+import "./a" // 执行a.js中的代码
+import * as info from './a';
+import funcName from './c' // 导入默认导出
+import {default as funcName} from './c';
+import sex,{name,age} from './a'; // sex是默认导出
+```
+
+
 
 
 
