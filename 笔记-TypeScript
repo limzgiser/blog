@@ -1465,7 +1465,7 @@ let info11 :ReadOnlyInfo1 = {
 - 导出是一个声明语句
 - export  当前模块中的值变化时，对应引入的模块中的值也会变化。
 
-- export 不能出现再块级作用域里
+- export 不能出现在块级作用域里
 - 一个模块只能使用一次export default
 
 ```javascript
@@ -1473,20 +1473,16 @@ let info11 :ReadOnlyInfo1 = {
 export const name = "zhangs";
 export const age = 18;
 export const address = "bb";
-
 const name = "zhangs";
 const age = 18;
 const address = "bb";
 export { name, age, address };
-
 export function func() {}
 export class A {}
-
 function func1() {}
 class B {}
 const b = "";
 export { func1 as FUnction1, B as ClassB, b as StringB };
-
 function func(params) {}
 export { func as default };
 ```
@@ -1504,6 +1500,227 @@ import funcName from './c' // 导入默认导出
 import {default as funcName} from './c';
 import sex,{name,age} from './a'; // sex是默认导出
 ```
+
+### 十一、模块与命名空间
+
+###### export
+
+```javascript
+export interface FuncInterface {
+  name: string;
+  (arg: number): string;
+}
+export class ClassC {
+  constructor() {}
+}
+class ClassD {
+  constructor() {}
+}
+export { ClassD };
+export { ClassD as ClassNameD };
+// b 模块
+export const name = 'zhangs';
+// export * from './b';
+// export {name} from '.b';
+// export {name as Name} from './b'
+```
+
+###### import
+
+```javascript
+import *  as info from './b'
+import {name as Name} from './b'
+import './a'
+export default
+// 一个模块只能有一个默认导出
+export default 'zhangs';
+import name from './c'
+```
+
+###### 命名空间
+
+```javascript
+namespace Validation {
+    const isLetterReg = /^[A-Za-Z]+$/;
+    export const isNumberReg = /^[0-9]+$/;
+    export const checkLatter = (text: any) => {
+      return isLetterReg.test(text);
+    };
+}
+```
+
+```javascript
+/// <reference path = './space.ts'/>
+let isLetter = Validation.checkLatter('abc');
+console.log(isLetter);
+// tsc --outFile src/index.js src/ts-modules/space.ts
+```
+
+### 十二、装饰器
+
+######  装饰器工厂
+
+```javascript
+function setName() {
+  console.log("get set name");
+  return  ()=> {
+    console.log("setName");
+  };
+}
+// 装饰器工厂
+function setAge(){
+    console.log('get setAge');
+    return ()=>{
+        console.log('setAge');
+    }
+}
+@setName()
+@setAge()
+class ClassDec {
+```
+
+######  类装饰器
+
+```javascript
+// 类装饰器
+let sign = null;
+function setName(name: string) {
+  return (target: new () => any) => {
+    sign = target;
+    console.log(target.name);
+  };
+}
+@setName('zhangs')
+class ClassDec {
+}
+// log ClassDec
+// console.log(sign===ClassDec); // true
+// console.log(sign===ClassDec.prototype.constructor);//true
+function addName(constructor:new ()=>any){
+    constructor.prototype.name = 'zhangs'
+}
+@addName
+class CalssD{}
+interface CalssD{
+    name:string
+}
+const d =  new CalssD();
+console.log(d.name);
+function classDecorator<T extends { new (...args: any[]): {} }>(target: T) {
+  return class extends target {
+    public newProperty = "new property";
+    public hello = "override";
+  };
+}
+@classDecorator
+class Gretter{
+    public property = 'property';
+    public hello:string;
+    constructor(m:string){
+        this.hello = m;
+    }
+}
+console.log(new Gretter('world'));
+//hello: "override"
+//newProperty: "new property"
+//property: "property"
+```
+
+###### 方法装饰器
+
+```javascript
+// 例： 可以控制方法属性的可枚举性
+function enumerabel(bool:boolean){
+    return function(target:any,propertyName:string,descriptor:PropertyDescriptor){
+        // console.log(target,propertyName);
+        // descriptor.enumerable = bool;
+        return {
+            value(){
+                return  18
+            },
+            enumerabel:bool
+        }
+    }
+}
+
+class ClassF{
+    constructor(public age:number){ }
+    @enumerabel(false)
+    public getAge(){
+        return this.age;
+    }
+}
+
+const f = new ClassF(12);
+console.log(f.getAge());
+```
+
+###### 访问器装饰器
+
+```javascript
+function enumerabel(bool: boolean) {
+  return function (
+    target: any,
+    propertyName: string,
+    descriptor: PropertyDescriptor
+  ) {
+    descriptor.enumerable = bool;
+  };
+}
+class ClassG {
+    private _name:string
+    constructor(name:string){
+        this._name = name;
+    }
+    @enumerabel(false)
+    get name (){
+        return this._name;
+    }
+    set name(name){
+        this._name = name;
+    }
+}
+const g = new ClassG('zhangs');
+for(let key in g){
+    console.log(key);
+}
+```
+
+###### 属性装饰器
+
+```javascript
+function printPropertyName(   target: any,
+    propertyName: string ) {
+        console.log(propertyName);       
+}
+class ClassH {
+    @printPropertyName
+    public name:string | undefined
+    constructor(){ }
+}
+```
+
+###### 参数装饰器
+
+```javascript
+function required(target:any,propertName:string,index:number){
+    console.log(`修饰的是${propertName}的第${index+1}个`);
+}
+class ClassI{
+    name:string = 'zhangs';
+    public age :number = 18;
+    public getInfo(prefix:string,@required infoType:string):any{
+        return prefix+' ' + this[infoType];
+    }
+}
+interface ClassI   {
+   [key:string]:string|number|Function
+}
+const classI = new ClassI();
+classI.getInfo('aaa','age')
+```
+
+
 
 
 
